@@ -16,7 +16,9 @@ app.use(
     methods: "GET,POST,PUT,DELETE",
   })
 );
-
+var bodyParser = require("body-parser");
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Initialize Microsoft Graph client with dynamic token
