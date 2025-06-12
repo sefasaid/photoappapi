@@ -117,6 +117,7 @@ app.post("/upload", upload.single("image"), async (req, res) => {
       date,
     });
   } catch (error) {
+    console.log(error);
     console.error("Upload error:", error.message);
     res.status(500).json({ error: "Failed to upload image" });
   }
