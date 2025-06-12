@@ -42,38 +42,50 @@ async function ensureFolderExists(folderPath) {
   console.log(folderUrl);
   return new Promise(async (resolve, reject) => {
     // 1. Check if the folder exists
-    const checkResponse = await axios.get(folderUrl);
-    console.log(checkResponse.status);
-    if (checkResponse.status === 200) {
-      console.log(`✅ Folder '${folderPath}' already exists.`);
-      resolve(true);
-    } else if (checkResponse.status === 404) {
-      console.log(`📂 Folder '${folderPath}' does not exist. Creating it...`);
-
-      // 2. Create the folder
-      const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
-      const folderName = folderPath.split("/").pop();
-
-      const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
-
-      const createResponse = await axios.post(createUrl, {
-        name: folderName,
-        folder: {},
-        "@microsoft.graph.conflictBehavior": "fail",
-      });
-
-      if (createResponse.status === 201) {
-        console.log(`✅ Folder '${folderPath}' created successfully.`);
-        resolve(true);
-      } else {
-        console.error("❌ Error creating folder:", createResponse.status);
+    axios
+      .get(folderUrl)
+      .then((res) => {
+        if (res.status === 200) {
+          resolve(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err.response.status);
+        console.log(err);
         reject(false);
-      }
-    } else {
-      console.error("⚠️ Error checking folder:", checkResponse.status);
-      reject(false);
-    }
+      });
   });
+
+  //   if (checkResponse.status === 200) {
+  //     console.log(`✅ Folder '${folderPath}' already exists.`);
+  //     resolve(true);
+  //   } else if (checkResponse.status === 404) {
+  //     console.log(`📂 Folder '${folderPath}' does not exist. Creating it...`);
+
+  //     // 2. Create the folder
+  //     const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
+  //     const folderName = folderPath.split("/").pop();
+
+  //     const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
+
+  //     const createResponse = await axios.post(createUrl, {
+  //       name: folderName,
+  //       folder: {},
+  //       "@microsoft.graph.conflictBehavior": "fail",
+  //     });
+
+  //     if (createResponse.status === 201) {
+  //       console.log(`✅ Folder '${folderPath}' created successfully.`);
+  //       resolve(true);
+  //     } else {
+  //       console.error("❌ Error creating folder:", createResponse.status);
+  //       reject(false);
+  //     }
+  //   } else {
+  //     console.error("⚠️ Error checking folder:", checkResponse.status);
+  //     reject(false);
+  //   }
+  // });
 }
 
 // Upload image endpoint
