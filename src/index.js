@@ -43,7 +43,7 @@ async function ensureFolderExists(folderPath) {
   return new Promise(async (resolve, reject) => {
     // 1. Check if the folder exists
     const checkResponse = await axios.get(folderUrl);
-
+    console.log(checkResponse.status);
     if (checkResponse.status === 200) {
       console.log(`✅ Folder '${folderPath}' already exists.`);
       resolve(true);
