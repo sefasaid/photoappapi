@@ -50,9 +50,32 @@ async function ensureFolderExists(folderPath) {
         }
       })
       .catch((err) => {
-        console.log(err.response.status);
-        console.log(err);
-        reject(false);
+        if (err.response.status === 404) {
+          const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
+          const folderName = folderPath.split("/").pop();
+
+          const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
+
+          axios
+            .post(createUrl, {
+              name: folderName,
+              folder: {},
+              "@microsoft.graph.conflictBehavior": "fail",
+            })
+            .then((res) => {
+              if (res.status === 201) {
+                resolve(true);
+              } else {
+                reject(false);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              reject(false);
+            });
+        } else {
+          reject(false);
+        }
       });
   });
 
