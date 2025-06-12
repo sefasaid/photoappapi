@@ -40,38 +40,40 @@ setInterval(() => {
 async function ensureFolderExists(folderPath) {
   const folderUrl = `/drives/${process.env.DRIVE_ID}/root:/Photos/${folderPath}:/`;
   console.log(folderUrl);
-  // 1. Check if the folder exists
-  const checkResponse = await axios.get(folderUrl);
+  return new Promise(async (resolve, reject) => {
+    // 1. Check if the folder exists
+    const checkResponse = await axios.get(folderUrl);
 
-  if (checkResponse.status === 200) {
-    console.log(`✅ Folder '${folderPath}' already exists.`);
-    return true;
-  } else if (checkResponse.status === 404) {
-    console.log(`📂 Folder '${folderPath}' does not exist. Creating it...`);
+    if (checkResponse.status === 200) {
+      console.log(`✅ Folder '${folderPath}' already exists.`);
+      resolve(true);
+    } else if (checkResponse.status === 404) {
+      console.log(`📂 Folder '${folderPath}' does not exist. Creating it...`);
 
-    // 2. Create the folder
-    const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
-    const folderName = folderPath.split("/").pop();
+      // 2. Create the folder
+      const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
+      const folderName = folderPath.split("/").pop();
 
-    const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
+      const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
 
-    const createResponse = await axios.post(createUrl, {
-      name: folderName,
-      folder: {},
-      "@microsoft.graph.conflictBehavior": "fail",
-    });
+      const createResponse = await axios.post(createUrl, {
+        name: folderName,
+        folder: {},
+        "@microsoft.graph.conflictBehavior": "fail",
+      });
 
-    if (createResponse.status === 201) {
-      console.log(`✅ Folder '${folderPath}' created successfully.`);
-      return true;
+      if (createResponse.status === 201) {
+        console.log(`✅ Folder '${folderPath}' created successfully.`);
+        resolve(true);
+      } else {
+        console.error("❌ Error creating folder:", createResponse.status);
+        reject(false);
+      }
     } else {
-      console.error("❌ Error creating folder:", createResponse.status);
-      return false;
+      console.error("⚠️ Error checking folder:", checkResponse.status);
+      reject(false);
     }
-  } else {
-    console.error("⚠️ Error checking folder:", checkResponse.status);
-    return false;
-  }
+  });
 }
 
 // Upload image endpoint
