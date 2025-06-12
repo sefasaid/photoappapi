@@ -54,7 +54,9 @@ async function ensureFolderExists(folderPath) {
           const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
           const folderName = folderPath.split("/").pop();
           console.log(parentPath, folderName);
-          const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
+
+          // Fix the URL construction for creating a folder
+          const createUrl = `/drives/${process.env.DRIVE_ID}/root:/Photos/${parentPath}:/children`;
 
           axios
             .post(createUrl, {
@@ -78,37 +80,6 @@ async function ensureFolderExists(folderPath) {
         }
       });
   });
-
-  //   if (checkResponse.status === 200) {
-  //     console.log(`✅ Folder '${folderPath}' already exists.`);
-  //     resolve(true);
-  //   } else if (checkResponse.status === 404) {
-  //     console.log(`📂 Folder '${folderPath}' does not exist. Creating it...`);
-
-  //     // 2. Create the folder
-  //     const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
-  //     const folderName = folderPath.split("/").pop();
-
-  //     const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
-
-  //     const createResponse = await axios.post(createUrl, {
-  //       name: folderName,
-  //       folder: {},
-  //       "@microsoft.graph.conflictBehavior": "fail",
-  //     });
-
-  //     if (createResponse.status === 201) {
-  //       console.log(`✅ Folder '${folderPath}' created successfully.`);
-  //       resolve(true);
-  //     } else {
-  //       console.error("❌ Error creating folder:", createResponse.status);
-  //       reject(false);
-  //     }
-  //   } else {
-  //     console.error("⚠️ Error checking folder:", checkResponse.status);
-  //     reject(false);
-  //   }
-  // });
 }
 
 // Upload image endpoint
