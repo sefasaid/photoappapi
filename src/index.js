@@ -53,7 +53,7 @@ async function ensureFolderExists(folderPath) {
         if (err.response.status === 404) {
           const parentPath = folderPath.split("/").slice(0, -1).join("/") || "";
           const folderName = folderPath.split("/").pop();
-
+          console.log(parentPath, folderName);
           const createUrl = `/drives/${process.env.DRIVE_ID}/root:/${parentPath}:/children`;
 
           axios
@@ -70,7 +70,7 @@ async function ensureFolderExists(folderPath) {
               }
             })
             .catch((err) => {
-              console.log(err);
+              console.log(err.response.data);
               reject(false);
             });
         } else {
